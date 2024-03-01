@@ -1,0 +1,51 @@
+const int lm35 = A0;   // LM35 temperature sensor connected to Analog pin A0
+const int ledpin1 = 13;    //LED connected to pin 13
+
+int temperature;
+unsigned long previousTime = 0;
+int blinkInterval = 250;
+
+void setup() {
+  pinMode(ledpin1, OUTPUT);  // initialization
+}
+
+void loop() {
+  readTemperature();
+
+  if (temperature < 30) {
+    blinkLED(250);  // LED blinking every 250 milliseconds
+  } else {
+    blinkLED(500);  //LED blinking every 500 milliseconds
+  }
+}
+
+void readTemperature() {
+  // it reads the analog value and converts into celsius
+  int sensorValue = analogRead(lm35);
+  float volt = sensorValue * (5.0 / 1023.0);
+  float temperatureC = (volt - 0.5) * 100.0;
+
+  temperature = static_cast<int>(temperatureC);
+}
+
+void blinkLED(int blinkInterval) {
+  unsigned long currentTime = getCurrentTime();  // time in milliseconds
+  unsigned long elapsedTime = currentTime - previousTime;
+
+  if (elapsedTime >= blinkInterval) {
+    previousTime = currentTime;
+
+    // if condition for led to blink
+    if (digitalRead(ledpin1) == LOW) {
+      digitalWrite(ledpin1, HIGH);
+    } else {
+      digitalWrite(ledpin1, LOW);
+    }
+  }
+}
+
+unsigned long getCurrentTime() {
+  return static_cast<unsigned long>(micros() / 1000);
+}
+
+
